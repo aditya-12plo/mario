@@ -12,12 +12,16 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/', 'IndexController@index');
-Route::get('/pdf', 'IndexController@pdf');
-Route::get('/excel', 'IndexController@excel');
+
+$router->group(['prefix' => 'root-system'], function () use ($router) {
+    Route::get('/', 'IndexController@index');
+    Route::get('/pdf', 'IndexController@pdf');
+    Route::get('/excel', 'IndexController@excel');
+});
 
 
+Route::get('/', 'Auth\LoginController@showLoginForm');
 Auth::routes();
 Auth::routes(['register' => false]);
-
 Route::get('/home', 'HomeController@index')->name('home');
+Route::post('/home', 'HomeController@mapsMatrix')->name('homePost');

@@ -34,20 +34,7 @@ class IndexController extends Controller
 	public function index()
     { 
 		// Log::channel('custom')->info('Something happened!');
-        // return view('welcome');
-        $value = 'Warakas1';
-        try{
-            echo Hash::make('Warakas1');
-            
-            // $user = new User();
-            // $user->email = 'nugroho.aditya@8commerce.com';
-            // $user->name = 'Aditya';
-            // $user->status = 'activated';
-            // $user->password = Hash::make('Warakas1');
-            // $user->save();
-        }catch (exception $e) {
-           echo json_encode($e);
-        }
+        return view('welcome');
     }
 	
 	public function pdf()
