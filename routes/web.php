@@ -25,3 +25,8 @@ Auth::routes();
 Auth::routes(['register' => false]);
 Route::get('/home', 'HomeController@index')->name('home');
 Route::post('/home', 'HomeController@mapsMatrix')->name('homePost');
+Route::get('/profile', 'HomeController@profile')->name('profile');
+Route::post('/profile', 'HomeController@profilePost')->name('profilePost');
+Route::get('/users', 'HomeController@users')->name('users');
+Route::get('/user/{encrpt}', 'HomeController@userDetail')->name('userDetail');
+Route::post('/user/{encrpt}', 'HomeController@userDetailPost')->name('userDetailPost');

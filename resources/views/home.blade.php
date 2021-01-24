@@ -28,7 +28,7 @@
             <div class="panel form-element-padding">
             <div class="col-md-12 panel">
                     <div class="col-md-12 panel-heading">
-                      <h4>Form Data AIzaSyDKsEC_DDuCMdWKPgN4dNQVKxPjte6M_Rc  units=metric mode=driving</h4>
+                      <h4>Form Data</h4>
                     </div>
                     <div class="col-md-12 panel-body" style="padding-bottom:30px;">
                     @include('layouts.errors')
@@ -90,10 +90,10 @@
     ?>
 @foreach ($datas as $data)
     <tr>
-      <th>{{ $data["from"]["desc"] }}</th>
+      <td>{{ $data["from"]["desc"] }}</td>
       <td>{{ $data["from"]["coordinates"] }}</td>
       <td>{{ $data["to"]["desc"] }}</td>
-      <th>{{ $data["origin_addresses"] }}</th>
+      <td>{{ $data["origin_addresses"] }}</td>
       <td>{{ $data["to"]["coordinates"] }}</td>
       <td>{{ $data["distance_value"] }} M / {{ $data["distance_text"] }}</td>
       <td>{{ $data["duration_value"] }} Second / {{ $data["duration_text"] }}</td>

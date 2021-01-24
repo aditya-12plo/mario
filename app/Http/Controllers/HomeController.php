@@ -6,7 +6,7 @@ use App\Http\Requests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Carbon\Carbon;
-use View,Input,Session,File,Hash,DB,Mail,Redirect;
+use View,Input,Session,File,Hash,DB,Mail,Redirect,Auth;
 use Illuminate\Support\Facades\Crypt;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -18,6 +18,11 @@ use PHPExcel;
 use PHPExcel_IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Contracts\Encryption\DecryptException;
+
+
+use App\Models\User;
+
 
 class HomeController extends Controller
 {
@@ -149,4 +154,91 @@ class HomeController extends Controller
         return $response_a;
     }
 
+
+
+    public function profile()
+    {
+        $this->data["user"] = User::findOrFail(Auth::user()->user_id);
+        return view('profile')->with($this->data);
+    }
+
+    public function profilePost(Request $request){
+        $cek = User::findOrFail(Auth::user()->user_id);
+        $valid = $this->validate($request, [
+            'name'          => 'required|max:255',
+            'phone'         => 'max:20',
+            'new_password'  => 'max:255',
+        ]);
+        
+        if($request->new_password){
+            $edit   = ['name' => $request->name, 'phone' => $request->phone ,'password' => Hash::make($request->new_password)];
+        }else{
+            $edit   = ['name' => $request->name, 'phone' => $request->phone];
+        }
+        $cek->update($edit); 
+        return redirect()->back()->with('success', 'Update Successfully');
+    }
+
+
+    public function users(Request $request)
+    {
+        $search = $request->filter;
+        if(Auth::user()->type == "root"){
+            $query = User::whereNotIn('user_id',[Auth::user()->user_id])->orderBy('user_id','DESC');
+            if ($search) {
+                $like = "%{$search}%";
+                $query = $query->where('email', 'LIKE', $like)->orWhere('name', 'LIKE', $like);
+            }
+            $this->data["users"] = $query->paginate(10);
+            return view('users')->with($this->data);
+
+        }else{
+            return redirect()->back()->with('error', 'Unauthorized');
+        }
+    }
+
+
+    public function userDetailPost(Request $request , $encrpt)
+    {
+        try {
+            $decrypted = Crypt::decryptString($encrpt);
+            if(Auth::user()->type == "root"){
+                $valid = $this->validate($request, [
+                    'name'          => 'required|max:255',
+                    'phone'         => 'max:20',
+                    'email'         => 'required|max:255|unique:users,email,'.$decrypted.',user_id',
+                    'new_password'  => 'max:255',
+                ]);
+                
+                    if($request->new_password){
+                        $edit   = ['email' => $request->email, 'name' => $request->name, 'phone' => $request->phone ,'password' => Hash::make($request->new_password)];
+                    }else{
+                        $edit   = ['email' => $request->email, 'name' => $request->name, 'phone' => $request->phone];
+                    }
+                User::where('user_id', $decrypted)->update($edit);
+
+                return redirect()->back()->with('success', 'Update Successfully');
+            }else{
+                return redirect()->back()->with('error', 'Unauthorized');
+            }
+        } catch (DecryptException $e) {
+            return redirect()->back()->with('error', $e);
+        }
+    }
+
+    public function userDetail($encrpt)
+    {
+        try {
+            $decrypted = Crypt::decryptString($encrpt);
+            if(Auth::user()->type == "root"){
+                $this->data["encrpt"]   = $encrpt;
+                $this->data["user"]     = User::findOrFail($decrypted);
+                return view('userDetail')->with($this->data);
+            }else{
+                return redirect()->back()->with('error', 'Unauthorized');
+            }
+        } catch (DecryptException $e) {
+            return redirect()->back()->with('error', $e);
+        }
+    }
 }

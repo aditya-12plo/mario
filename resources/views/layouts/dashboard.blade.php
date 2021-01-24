@@ -3,8 +3,10 @@
 <head>
 	
 	<meta charset="utf-8">
-	<meta name="description" content="Miminium Admin Template v.1">
-	<meta name="author" content="Isna Nur Azis">
+	<meta name="description" content="Linc Group">
+  <meta name="author" content="@adit_XxX_">
+    <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="-1">
 	<meta name="keyword" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="author" content="@adit_xxx_">
@@ -69,6 +71,9 @@
                 <ul class="nav nav-list">
                     <li><div class="left-bg"></div></li>
                     <li><a href="/home">Dasboard</a></li>
+                    @if(Auth::user()->type == "root")
+                      <li><a href="/users">Users</a></li>
+                    @endif
 <!--
                     <li class="ripple">
                       <a class="tree-toggle nav-header">
